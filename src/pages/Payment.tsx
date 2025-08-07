@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { PricingPlans } from "@/components/pricing/PricingPlans";
 
 const Payment = () => {
   const { user } = useAuth();
@@ -90,13 +91,32 @@ const Payment = () => {
     return billingCycle === 'monthly' ? planData.monthlyPrice : planData.yearlyPrice;
   };
 
+  const planData = getSelectedPlanData();
+
+  // If no plan selected, show pricing plans
+  if (!selectedPlan || !planData) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl font-bold text-primary mb-4">
+              Bảng giá dịch vụ
+            </h1>
+            <p className="text-xl text-subtle">
+              Chọn gói phù hợp với nhu cầu học thuật của bạn
+            </p>
+          </div>
+          <PricingPlans />
+        </div>
+      </div>
+    );
+  }
+
   // Redirect to auth if not logged in
   if (!user) {
     window.location.href = '/auth';
     return null;
   }
-
-  const planData = getSelectedPlanData();
 
   return (
     <div className="min-h-screen bg-gradient-subtle py-20">
@@ -114,7 +134,7 @@ const Payment = () => {
         <div className="mb-8">
           <Button 
             variant="outline" 
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = '/payment'}
             className="flex items-center space-x-2"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -129,56 +149,42 @@ const Payment = () => {
               Thông tin gói đã chọn
             </h2>
             
-            {planData ? (
-              <Card className="border-2 border-primary">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>{planData.name}</span>
-                    <Badge variant="secondary">
-                      {billingCycle === 'monthly' ? 'Hàng tháng' : 'Hàng năm'}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    <div className="flex items-baseline">
-                      <span className="text-3xl font-bold text-primary">
-                        {formatPrice(getAmount())}
-                      </span>
-                      <span className="text-subtle ml-2">
-                        /{billingCycle === 'monthly' ? 'tháng' : 'năm'}
-                      </span>
+            <Card className="border-2 border-primary">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>{planData.name}</span>
+                  <Badge variant="secondary">
+                    {billingCycle === 'monthly' ? 'Hàng tháng' : 'Hàng năm'}
+                  </Badge>
+                </CardTitle>
+                <CardDescription>
+                  <div className="flex items-baseline">
+                    <span className="text-3xl font-bold text-primary">
+                      {formatPrice(getAmount())}
+                    </span>
+                    <span className="text-subtle ml-2">
+                      /{billingCycle === 'monthly' ? 'tháng' : 'năm'}
+                    </span>
+                  </div>
+                  {billingCycle === 'yearly' && (
+                    <div className="text-green-600 text-sm mt-1">
+                      ✨ Tiết kiệm {formatPrice(planData.monthlyPrice * 2)} so với thanh toán hàng tháng
                     </div>
-                    {billingCycle === 'yearly' && (
-                      <div className="text-green-600 text-sm mt-1">
-                        ✨ Tiết kiệm {formatPrice(planData.monthlyPrice * 2)} so với thanh toán hàng tháng
-                      </div>
-                    )}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-2">
-                    {planData.features.map((feature, index) => (
-                      <li key={index} className="flex items-start space-x-3">
-                        <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-subtle">Vui lòng chọn gói dịch vụ</p>
-                  <Button 
-                    onClick={() => window.location.href = '/'}
-                    className="mt-4"
-                  >
-                    Chọn gói dịch vụ
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+                  )}
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent>
+                <ul className="space-y-2">
+                  {planData.features.map((feature, index) => (
+                    <li key={index} className="flex items-start space-x-3">
+                      <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Payment Methods */}
@@ -187,19 +193,11 @@ const Payment = () => {
               Phương thức thanh toán
             </h2>
             
-            {planData ? (
-              <PaymentMethods
-                selectedPlan={selectedPlan}
-                billingCycle={billingCycle}
-                amount={getAmount()}
-              />
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center text-subtle">
-                  Vui lòng chọn gói dịch vụ để tiếp tục
-                </CardContent>
-              </Card>
-            )}
+            <PaymentMethods
+              selectedPlan={selectedPlan}
+              billingCycle={billingCycle}
+              amount={getAmount()}
+            />
           </div>
         </div>
       </div>
