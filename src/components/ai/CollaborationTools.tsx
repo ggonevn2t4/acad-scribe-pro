@@ -224,7 +224,8 @@ const CollaborationTools = () => {
 
   const loadProjectComments = async (projectId: string) => {
     try {
-      const { data, error } = await supabase
+      // First, get all comments for the project
+      const { data: commentsData, error: commentsError } = await supabase
         .from('project_comments')
         .select(`
           id,
@@ -232,13 +233,48 @@ const CollaborationTools = () => {
           position_start,
           position_end,
           created_at,
-          profiles!inner(display_name, email)
+          user_id
         `)
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setComments(data || []);
+      if (commentsError) throw commentsError;
+
+      if (!commentsData || commentsData.length === 0) {
+        setComments([]);
+        return;
+      }
+
+      // Get unique user IDs from comments
+      const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+
+      // Fetch profiles for these users
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, email')
+        .in('user_id', userIds);
+
+      if (profilesError) {
+        console.error('Error loading profiles:', profilesError);
+      }
+
+      // Create a map of user_id to profile for easy lookup
+      const profilesMap = new Map();
+      profilesData?.forEach(profile => {
+        profilesMap.set(profile.user_id, profile);
+      });
+
+      // Combine comments with profile data
+      const transformedData: Comment[] = commentsData.map(comment => ({
+        id: comment.id,
+        content: comment.content,
+        position_start: comment.position_start,
+        position_end: comment.position_end,
+        created_at: comment.created_at,
+        profiles: profilesMap.get(comment.user_id) || { display_name: 'Unknown User', email: '' }
+      }));
+      
+      setComments(transformedData);
     } catch (error) {
       console.error('Error loading comments:', error);
       setComments([]);
