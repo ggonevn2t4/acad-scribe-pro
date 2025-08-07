@@ -5,6 +5,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
+import ZaloChat from "@/components/ZaloChat";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
       <PricingPlans />
       </main>
       <Footer />
+      <ZaloChat />
     </div>
   );
 };

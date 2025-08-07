@@ -97,11 +97,19 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-white/60" />
-                <span className="text-white/80">+84 24 1234 5678</span>
+                <a href="tel:0708684608" className="text-white/80 hover:text-white transition-colors">
+                  0708 684 608
+                </a>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-white/60" />
-                <span className="text-white/80">Hà Nội, Việt Nam</span>
+                <span className="text-white/80">Landmark 81, Quận Bình Thạnh, TPHCM</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-blue-500 rounded-sm flex items-center justify-center text-xs font-bold text-white">Z</div>
+                <a href="https://zalo.me/84708684608" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-white transition-colors">
+                  Zalo: 0708 684 608
+                </a>
               </div>
             </div>
           </div>
