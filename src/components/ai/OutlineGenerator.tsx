@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, Download, Loader2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, ChevronRight, Download, Loader2, Edit, FileText } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import EditableOutline from "./EditableOutline";
 
 interface OutlineSection {
   title: string;
@@ -34,6 +36,8 @@ const OutlineGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [outline, setOutline] = useState<OutlineData | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set());
+  const [generatedArticle, setGeneratedArticle] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("view");
   
   const { user } = useAuth();
   const { toast } = useToast();
@@ -78,6 +82,11 @@ const OutlineGenerator = () => {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleArticleGenerated = (article: string) => {
+    setGeneratedArticle(article);
+    setActiveTab("article");
   };
 
   const toggleSection = (index: number) => {
@@ -192,96 +201,158 @@ const OutlineGenerator = () => {
         )}
       </Button>
 
-      {/* Generated Outline */}
+      {/* Generated Outline with Tabs */}
       {outline && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-primary">{outline.title}</h2>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex items-center justify-between mb-4">
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger value="view">Xem outline</TabsTrigger>
+              <TabsTrigger value="edit">Chỉnh sửa</TabsTrigger>
+              <TabsTrigger value="article" disabled={!generatedArticle}>
+                Bài viết {generatedArticle && "✓"}
+              </TabsTrigger>
+            </TabsList>
             <Button onClick={exportOutline} variant="outline" size="sm">
               <Download className="mr-2 h-4 w-4" />
-              Export
+              Export Outline
             </Button>
           </div>
 
-          <div className="space-y-3">
-            {outline.sections.map((section, index) => (
-              <Card key={index}>
-                <Collapsible
-                  open={expandedSections.has(index)}
-                  onOpenChange={() => toggleSection(index)}
-                >
-                  <CollapsibleTrigger asChild>
-                    <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg flex items-center gap-2">
-                          {expandedSections.has(index) ? 
-                            <ChevronDown className="h-4 w-4" /> : 
-                            <ChevronRight className="h-4 w-4" />
-                          }
-                          {index + 1}. {section.title}
-                        </CardTitle>
-                        <Badge variant="secondary">
-                          {section.subsections.length} phần
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent>
-                    <CardContent className="pt-0">
-                      <div className="space-y-4">
-                        {section.subsections.map((subsection, subIndex) => (
-                          <div key={subIndex} className="border-l-2 border-accent pl-4">
-                            <h4 className="font-semibold text-foreground mb-2">
-                              {index + 1}.{subIndex + 1} {subsection.title}
-                            </h4>
-                            
-                            {subsection.points.length > 0 && (
-                              <div className="mb-3">
-                                <p className="text-sm font-medium text-muted-foreground mb-1">Điểm chính:</p>
-                                <ul className="list-disc list-inside text-sm space-y-1">
-                                  {subsection.points.map((point, pointIndex) => (
-                                    <li key={pointIndex} className="text-foreground">{point}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                            
-                            {subsection.evidence.length > 0 && (
-                              <div>
-                                <p className="text-sm font-medium text-muted-foreground mb-1">Bằng chứng cần thiết:</p>
-                                <ul className="list-disc list-inside text-sm space-y-1">
-                                  {subsection.evidence.map((evidence, evidenceIndex) => (
-                                    <li key={evidenceIndex} className="text-subtle">{evidence}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </CollapsibleContent>
-                </Collapsible>
-              </Card>
-            ))}
+          <TabsContent value="view" className="space-y-4">
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold text-primary">{outline.title}</h2>
+              {outline.sections.map((section, index) => (
+                <Card key={index}>
+                  <Collapsible
+                    open={expandedSections.has(index)}
+                    onOpenChange={() => toggleSection(index)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            {expandedSections.has(index) ? 
+                              <ChevronDown className="h-4 w-4" /> : 
+                              <ChevronRight className="h-4 w-4" />
+                            }
+                            {index + 1}. {section.title}
+                          </CardTitle>
+                          <Badge variant="secondary">
+                            {section.subsections.length} phần
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <CardContent className="pt-0">
+                        <div className="space-y-4">
+                          {section.subsections.map((subsection, subIndex) => (
+                            <div key={subIndex} className="border-l-2 border-accent pl-4">
+                              <h4 className="font-semibold text-foreground mb-2">
+                                {index + 1}.{subIndex + 1} {subsection.title}
+                              </h4>
+                              
+                              {subsection.points.length > 0 && (
+                                <div className="mb-3">
+                                  <p className="text-sm font-medium text-muted-foreground mb-1">Điểm chính:</p>
+                                  <ul className="list-disc list-inside text-sm space-y-1">
+                                    {subsection.points.map((point, pointIndex) => (
+                                      <li key={pointIndex} className="text-foreground">{point}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              
+                              {subsection.evidence.length > 0 && (
+                                <div>
+                                  <p className="text-sm font-medium text-muted-foreground mb-1">Bằng chứng cần thiết:</p>
+                                  <ul className="list-disc list-inside text-sm space-y-1">
+                                    {subsection.evidence.map((evidence, evidenceIndex) => (
+                                      <li key={evidenceIndex} className="text-subtle">{evidence}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </Card>
+              ))}
 
-            {outline.conclusion.length > 0 && (
+              {outline.conclusion.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Kết luận</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="list-disc list-inside space-y-2">
+                      {outline.conclusion.map((point, index) => (
+                        <li key={index} className="text-foreground">{point}</li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="edit">
+            <EditableOutline
+              initialOutline={outline}
+              topic={topic}
+              academicLevel={academicLevel}
+              wordCount={parseInt(wordCount)}
+              onArticleGenerated={handleArticleGenerated}
+            />
+          </TabsContent>
+
+          <TabsContent value="article">
+            {generatedArticle ? (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Kết luận</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Bài viết hoàn chỉnh
+                      </CardTitle>
+                      <CardDescription>
+                        Bài viết được tạo từ outline của bạn
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge variant="outline">
+                        {generatedArticle.split(' ').length} từ
+                      </Badge>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <ul className="list-disc list-inside space-y-2">
-                    {outline.conclusion.map((point, index) => (
-                      <li key={index} className="text-foreground">{point}</li>
-                    ))}
-                  </ul>
+                  <div className="prose max-w-none">
+                    <div className="whitespace-pre-wrap font-serif leading-relaxed text-foreground">
+                      {generatedArticle}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center py-8">
+                    <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">
+                      Chưa có bài viết. Sử dụng tab "Chỉnh sửa" để tạo bài viết từ outline.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
