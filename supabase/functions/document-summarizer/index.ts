@@ -37,29 +37,31 @@ serve(async (req) => {
         lengthInstruction = 'in 1-2 paragraphs';
     }
 
-    const prompt = `Please analyze and summarize the following document ${lengthInstruction}:
+    const prompt = `Vui lòng phân tích và tóm tắt tài liệu sau ${lengthInstruction} BẰNG TIẾNG VIỆT:
 
 ${content}
 
-Provide your response in JSON format:
+Cung cấp phản hồi theo định dạng JSON:
 {
-  "summary": "The main summary text",
+  "summary": "Nội dung tóm tắt chính",
   "keyInsights": [
-    "Key insight 1",
-    "Key insight 2",
-    "Key insight 3",
-    "Key insight 4",
-    "Key insight 5"
+    "Insight quan trọng 1",
+    "Insight quan trọng 2",
+    "Insight quan trọng 3",
+    "Insight quan trọng 4",
+    "Insight quan trọng 5"
   ],
-  "mainTopics": ["Topic 1", "Topic 2", "Topic 3"],
-  "wordCount": number_of_words_in_original
+  "mainTopics": ["Chủ đề 1", "Chủ đề 2", "Chủ đề 3"],
+  "wordCount": số_từ_trong_bản_gốc
 }
 
-Focus on:
-- Main arguments and conclusions
-- Key evidence and data points
-- Important methodologies or approaches
-- Significant findings or results`;
+Tập trung vào:
+- Các luận điểm và kết luận chính
+- Dữ liệu và bằng chứng quan trọng
+- Phương pháp tiếp cận quan trọng
+- Những phát hiện hoặc kết quả có ý nghĩa
+
+LƯU Ý: Tất cả nội dung phải bằng tiếng Việt.`;
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -74,7 +76,7 @@ Focus on:
         messages: [
           {
             role: 'system',
-            content: 'You are an expert document analyzer. Create comprehensive yet concise summaries that capture the essence of academic and professional documents. Always respond with valid JSON.'
+            content: 'Bạn là một chuyên gia phân tích tài liệu. Tạo các bản tóm tắt toàn diện nhưng súc tích, nắm bắt được bản chất của các tài liệu học thuật và chuyên nghiệp. Luôn phản hồi bằng JSON hợp lệ và sử dụng TIẾNG VIỆT.'
           },
           {
             role: 'user',

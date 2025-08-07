@@ -25,32 +25,34 @@ serve(async (req) => {
     let prompt = '';
     
     if (action === 'format') {
-      prompt = `Format the following citation according to ${citationStyle} style:
+      prompt = `Định dạng citation sau theo chuẩn ${citationStyle}:
 
-Raw citation: ${rawCitation}
+Citation gốc: ${rawCitation}
 
-Please analyze the citation and provide:
-1. Properly formatted citation
-2. Extracted bibliographic information
-3. Citation type (book, journal article, website, etc.)
+Vui lòng phân tích citation và cung cấp:
+1. Citation được định dạng đúng chuẩn
+2. Thông tin thư mục được trích xuất
+3. Loại citation (sách, bài báo, website, v.v.)
 
-Format as JSON:
+Định dạng JSON:
 {
-  "formattedCitation": "Properly formatted citation",
-  "title": "Title of work",
-  "author": "Author name(s)",
-  "publicationYear": year_number,
-  "sourceType": "book/journal/website/etc",
-  "publisher": "Publisher name if applicable",
-  "url": "URL if applicable",
-  "doi": "DOI if applicable"
-}`;
+  "formattedCitation": "Citation được định dạng đúng chuẩn",
+  "title": "Tiêu đề công trình",
+  "author": "Tên tác giả",
+  "publicationYear": năm_xuất_bản,
+  "sourceType": "sách/bài_báo/website/v.v.",
+  "publisher": "Tên nhà xuất bản nếu có",
+  "url": "URL nếu có",
+  "doi": "DOI nếu có"
+}
+
+LƯU Ý: Giữ nguyên các thông tin như tên tác giả, tiêu đề bằng ngôn ngữ gốc. Chỉ dịch các trường mô tả như sourceType sang tiếng Việt.`;
     } else if (action === 'convert') {
-      prompt = `Convert the following citation from its current format to ${citationStyle} style:
+      prompt = `Chuyển đổi citation sau từ định dạng hiện tại sang chuẩn ${citationStyle}:
 
 Citation: ${rawCitation}
 
-Provide only the properly formatted citation according to ${citationStyle} guidelines.`;
+Chỉ cung cấp citation được định dạng đúng theo hướng dẫn ${citationStyle}.`;
     }
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -66,7 +68,7 @@ Provide only the properly formatted citation according to ${citationStyle} guide
         messages: [
           {
             role: 'system',
-            content: `You are an expert in academic citation formats including APA, MLA, Chicago, Harvard, and other styles. Format citations accurately according to the latest guidelines.`
+            content: `Bạn là một chuyên gia về các định dạng citation học thuật bao gồm APA, MLA, Chicago, Harvard và các chuẩn khác. Định dạng các citation chính xác theo hướng dẫn mới nhất. Sử dụng tiếng Việt cho các mô tả.`
           },
           {
             role: 'user',

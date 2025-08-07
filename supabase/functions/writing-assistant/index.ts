@@ -24,49 +24,51 @@ serve(async (req) => {
     let prompt = '';
     
     if (action === 'improve') {
-      prompt = `Improve the following text for ${writingStyle} writing style:
+      prompt = `Cải thiện văn bản sau theo phong cách viết ${writingStyle}:
 
-Context: ${context}
-Current text: ${currentText}
+Bối cảnh: ${context}
+Văn bản hiện tại: ${currentText}
 
-Please provide:
-1. Improved version of the text
-2. Specific suggestions for enhancement
-3. Grammar and style corrections
-4. Readability improvements
+Vui lòng cung cấp:
+1. Phiên bản được cải thiện của văn bản
+2. Các gợi ý cụ thể để nâng cao chất lượng
+3. Sửa lỗi ngữ pháp và phong cách
+4. Cải thiện độ dễ đọc
 
-Format as JSON:
+Định dạng JSON:
 {
-  "improvedText": "The enhanced version",
-  "suggestions": ["Suggestion 1", "Suggestion 2"],
-  "grammarFixes": ["Fix 1", "Fix 2"],
-  "readabilityScore": "estimated readability level"
-}`;
+  "improvedText": "Phiên bản đã cải thiện",
+  "suggestions": ["Gợi ý 1", "Gợi ý 2"],
+  "grammarFixes": ["Sửa lỗi 1", "Sửa lỗi 2"],
+  "readabilityScore": "mức độ dễ đọc ước tính"
+}
+
+LƯU Ý: Tất cả nội dung phải bằng tiếng Việt.`;
     } else if (action === 'continue') {
-      prompt = `Continue writing the following text in ${writingStyle} style:
+      prompt = `Tiếp tục viết văn bản sau theo phong cách ${writingStyle}:
 
-Context: ${context}
-Current text: ${currentText}
+Bối cảnh: ${context}
+Văn bản hiện tại: ${currentText}
 
-Please provide a natural continuation that:
-- Maintains the same tone and style
-- Flows logically from the existing content
-- Adds substantial value to the argument
+Vui lòng cung cấp phần tiếp theo tự nhiên với:
+- Duy trì giọng điệu và phong cách giống như trước
+- Kết nối logic từ nội dung hiện có
+- Thêm giá trị thực chất cho luận điểm
 
-Return only the continuation text as a string.`;
+Chỉ trả về phần tiếp theo dưới dạng chuỗi văn bản bằng tiếng Việt.`;
     } else if (action === 'rewrite') {
-      prompt = `Rewrite the following text in ${writingStyle} style:
+      prompt = `Viết lại văn bản sau theo phong cách ${writingStyle}:
 
-Context: ${context}
-Current text: ${currentText}
+Bối cảnh: ${context}
+Văn bản hiện tại: ${currentText}
 
-Please rewrite to:
-- Match the requested writing style
-- Improve clarity and flow
-- Maintain the original meaning
-- Enhance academic rigor
+Vui lòng viết lại để:
+- Phù hợp với phong cách viết được yêu cầu
+- Cải thiện độ rõ ràng và mạch lạc
+- Giữ nguyên ý nghĩa ban đầu
+- Nâng cao tính học thuật
 
-Return only the rewritten text as a string.`;
+Chỉ trả về văn bản đã được viết lại dưới dạng chuỗi bằng tiếng Việt.`;
     }
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -82,7 +84,7 @@ Return only the rewritten text as a string.`;
         messages: [
           {
             role: 'system',
-            content: 'You are an expert writing assistant specializing in academic and professional writing. Provide clear, actionable feedback and improvements.'
+            content: 'Bạn là một chuyên gia hỗ trợ viết chuyên về viết học thuật và chuyên nghiệp. Cung cấp phản hồi rõ ràng, có thể hành động được và các cải thiện. Luôn sử dụng TIẾNG VIỆT.'
           },
           {
             role: 'user',

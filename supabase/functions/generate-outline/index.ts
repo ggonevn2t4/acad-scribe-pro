@@ -22,35 +22,37 @@ serve(async (req) => {
 
     console.log('Generating outline for:', { topic, academicLevel, wordCount });
 
-    const prompt = `Create a detailed academic outline for the following topic:
+    const prompt = `Tạo một outline học thuật chi tiết cho chủ đề sau BẰNG TIẾNG VIỆT:
 
-Topic: ${topic}
-Academic Level: ${academicLevel}
-Target Word Count: ${wordCount}
+Chủ đề: ${topic}
+Cấp độ học thuật: ${academicLevel}
+Số từ mục tiêu: ${wordCount}
 
-Please generate a comprehensive outline with:
-1. Main sections (3-5 major points)
-2. Subsections for each main point
-3. Key arguments and evidence needed
-4. Conclusion points
+Vui lòng tạo một outline toàn diện với:
+1. Các phần chính (3-5 điểm lớn)
+2. Các phần con cho mỗi điểm chính
+3. Những luận điểm và bằng chứng cần thiết
+4. Các điểm kết luận
 
-Format the response as a JSON object with this structure:
+Định dạng phản hồi dưới dạng JSON với cấu trúc này:
 {
-  "title": "Suggested title for the paper",
+  "title": "Tiêu đề đề xuất cho bài viết",
   "sections": [
     {
-      "title": "Section title",
+      "title": "Tiêu đề phần",
       "subsections": [
         {
-          "title": "Subsection title",
-          "points": ["Key point 1", "Key point 2"],
-          "evidence": ["Evidence type needed"]
+          "title": "Tiêu đề phần con",
+          "points": ["Điểm chính 1", "Điểm chính 2"],
+          "evidence": ["Loại bằng chứng cần thiết"]
         }
       ]
     }
   ],
-  "conclusion": ["Key conclusion points"]
-}`;
+  "conclusion": ["Các điểm kết luận chính"]
+}
+
+LƯU Ý: Tất cả nội dung phải bằng tiếng Việt.`;
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -65,7 +67,7 @@ Format the response as a JSON object with this structure:
         messages: [
           {
             role: 'system',
-            content: 'You are an expert academic writing assistant. Create detailed, well-structured outlines for academic papers. Always respond with valid JSON.'
+            content: 'Bạn là một chuyên gia hỗ trợ viết học thuật. Tạo các outline chi tiết, có cấu trúc tốt cho các bài viết học thuật. Luôn phản hồi bằng JSON hợp lệ và sử dụng TIẾNG VIỆT cho tất cả nội dung.'
           },
           {
             role: 'user',
