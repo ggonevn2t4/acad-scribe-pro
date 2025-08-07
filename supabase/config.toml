@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.citation-manager]
 verify_jwt = false
+
+[functions.plagiarism-detector]
+verify_jwt = false
+
+[functions.collaboration-manager]
+verify_jwt = false

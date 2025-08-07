@@ -128,6 +128,42 @@ export type Database = {
         }
         Relationships: []
       }
+      plagiarism_checks: {
+        Row: {
+          check_status: string
+          created_at: string
+          file_name: string | null
+          id: string
+          original_text: string
+          overall_similarity: number
+          sources_found: Json | null
+          suggestions: Json | null
+          user_id: string
+        }
+        Insert: {
+          check_status?: string
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          original_text: string
+          overall_similarity?: number
+          sources_found?: Json | null
+          suggestions?: Json | null
+          user_id: string
+        }
+        Update: {
+          check_status?: string
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          original_text?: string
+          overall_similarity?: number
+          sources_found?: Json | null
+          suggestions?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -158,6 +194,169 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      project_collaborators: {
+        Row: {
+          accepted_at: string | null
+          id: string
+          invited_at: string
+          invited_by: string
+          project_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          id?: string
+          invited_at?: string
+          invited_by: string
+          project_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          id?: string
+          invited_at?: string
+          invited_by?: string
+          project_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_collaborators_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          parent_id: string | null
+          position_end: number | null
+          position_start: number | null
+          project_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          position_end?: number | null
+          position_start?: number | null
+          project_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          position_end?: number | null
+          position_start?: number | null
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "project_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_versions: {
+        Row: {
+          change_summary: string | null
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          project_id: string
+          version_number: number
+        }
+        Insert: {
+          change_summary?: string | null
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          project_id: string
+          version_number: number
+        }
+        Update: {
+          change_summary?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          project_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_versions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          content: string
+          created_at: string
+          description: string | null
+          document_type: string
+          id: string
+          is_public: boolean | null
+          owner_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          description?: string | null
+          document_type?: string
+          id?: string
+          is_public?: boolean | null
+          owner_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string | null
+          document_type?: string
+          id?: string
+          is_public?: boolean | null
+          owner_id?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

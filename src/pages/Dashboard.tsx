@@ -3,11 +3,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, PenTool, BookOpen, Quote } from "lucide-react";
+import { FileText, PenTool, BookOpen, Quote, Shield, Users } from "lucide-react";
 import OutlineGenerator from "@/components/ai/OutlineGenerator";
 import WritingAssistant from "@/components/ai/WritingAssistant";
 import DocumentSummarizer from "@/components/ai/DocumentSummarizer";
 import CitationManager from "@/components/ai/CitationManager";
+import PlagiarismDetector from "@/components/ai/PlagiarismDetector";
+import CollaborationTools from "@/components/ai/CollaborationTools";
 import Header from "@/components/Header";
 
 const Dashboard = () => {
@@ -41,7 +43,7 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="outline" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-6 mb-8">
             <TabsTrigger value="outline" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Outline Generator
@@ -57,6 +59,14 @@ const Dashboard = () => {
             <TabsTrigger value="citations" className="flex items-center gap-2">
               <Quote className="h-4 w-4" />
               Citation Manager
+            </TabsTrigger>
+            <TabsTrigger value="plagiarism" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Plagiarism Detector
+            </TabsTrigger>
+            <TabsTrigger value="collaboration" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Collaboration Tools
             </TabsTrigger>
           </TabsList>
 
@@ -124,6 +134,40 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <CitationManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="plagiarism">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Plagiarism Detector
+                </CardTitle>
+                <CardDescription>
+                  Kiểm tra đạo văn và đưa ra gợi ý paraphrase
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PlagiarismDetector />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="collaboration">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Collaboration Tools
+                </CardTitle>
+                <CardDescription>
+                  Chia sẻ projects và cộng tác với advisor
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CollaborationTools />
               </CardContent>
             </Card>
           </TabsContent>
