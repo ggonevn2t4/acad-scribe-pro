@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, Users, FileText, CheckCircle } from "lucide-react";
 import heroImage from "@/assets/hero-academic-ai.jpg";
-
 const HeroSection = () => {
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 gradient-hero opacity-5"></div>
       
@@ -12,10 +10,14 @@ const HeroSection = () => {
       <div className="absolute top-20 left-10 opacity-20 animate-float">
         <FileText className="h-8 w-8 text-accent" />
       </div>
-      <div className="absolute top-40 right-20 opacity-20 animate-float" style={{ animationDelay: '2s' }}>
+      <div className="absolute top-40 right-20 opacity-20 animate-float" style={{
+      animationDelay: '2s'
+    }}>
         <Sparkles className="h-6 w-6 text-primary" />
       </div>
-      <div className="absolute bottom-32 left-20 opacity-20 animate-float" style={{ animationDelay: '4s' }}>
+      <div className="absolute bottom-32 left-20 opacity-20 animate-float" style={{
+      animationDelay: '4s'
+    }}>
         <CheckCircle className="h-7 w-7 text-accent" />
       </div>
 
@@ -32,7 +34,7 @@ const HeroSection = () => {
             
             <h1 className="text-4xl lg:text-6xl font-bold leading-tight text-primary mb-6">
               Trí tuệ nhân tạo
-              <span className="block gradient-primary bg-clip-text text-transparent">
+              <span className="block gradient-primary bg-clip-text text-[foreforeground] text-inherit">
                 hỗ trợ viết học thuật
               </span>
               <span className="block text-foreground">
@@ -63,18 +65,11 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="gradient-primary hover-lift shadow-accent group"
-              >
+              <Button size="lg" className="gradient-primary hover-lift shadow-accent group">
                 Bắt đầu miễn phí
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="hover-lift group"
-              >
+              <Button variant="outline" size="lg" className="hover-lift group">
                 <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 Xem demo
               </Button>
@@ -86,13 +81,11 @@ const HeroSection = () => {
           </div>
 
           {/* Right image */}
-          <div className="relative animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <div className="relative animate-fade-in-up" style={{
+          animationDelay: '0.3s'
+        }}>
             <div className="relative">
-              <img
-                src={heroImage}
-                alt="Students using AI for academic writing"
-                className="w-full h-auto rounded-2xl shadow-elegant hover-lift"
-              />
+              <img src={heroImage} alt="Students using AI for academic writing" className="w-full h-auto rounded-2xl shadow-elegant hover-lift" />
               
               {/* Floating cards */}
               <div className="absolute -top-4 -left-4 surface-elevated p-4 rounded-xl shadow-soft animate-float">
@@ -102,7 +95,9 @@ const HeroSection = () => {
                 </div>
               </div>
               
-              <div className="absolute -bottom-4 -right-4 surface-elevated p-4 rounded-xl shadow-soft animate-float" style={{ animationDelay: '1s' }}>
+              <div className="absolute -bottom-4 -right-4 surface-elevated p-4 rounded-xl shadow-soft animate-float" style={{
+              animationDelay: '1s'
+            }}>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-4 w-4 text-accent" />
                   <span className="text-sm font-medium">Hoàn thành 95%</span>
@@ -112,8 +107,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
