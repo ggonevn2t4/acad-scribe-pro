@@ -1,1 +1,13 @@
 project_id = "uixogobytjepprqjvvtw"
+
+[functions.generate-outline]
+verify_jwt = false
+
+[functions.writing-assistant]
+verify_jwt = false
+
+[functions.document-summarizer]
+verify_jwt = false
+
+[functions.citation-manager]
+verify_jwt = false

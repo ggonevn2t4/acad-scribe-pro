@@ -11,7 +11,7 @@ const Header = () => {
 
   const navigation = [
     { name: "Trang chủ", href: "/" },
-    { name: "Công cụ", href: "/tools" },
+    { name: "AI Studio", href: "/dashboard" },
     { name: "Pricing", href: "/pricing" },
     { name: "Hướng dẫn", href: "/guide" },
     { name: "Liên hệ", href: "/contact" },
