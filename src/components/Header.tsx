@@ -12,7 +12,7 @@ const Header = () => {
   const navigation = [
     { name: "Trang chủ", href: "/" },
     { name: "AI Studio", href: "/dashboard" },
-    { name: "Pricing", href: "/pricing" },
+    { name: "Nâng cấp", href: "/payment" },
     { name: "Hướng dẫn", href: "/guide" },
     { name: "Liên hệ", href: "/contact" },
   ];
@@ -35,13 +35,13 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navigation.map((item) => (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -105,13 +105,14 @@ const Header = () => {
           <div className="lg:hidden border-t border-border">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
                   className="block px-3 py-2 text-foreground hover:text-primary hover:bg-muted rounded-md font-medium"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
               <div className="flex flex-col space-y-2 px-3 pt-4 border-t border-border mt-4">
                 {user ? (
