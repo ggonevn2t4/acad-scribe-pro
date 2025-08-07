@@ -128,6 +128,60 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          billing_cycle: Database["public"]["Enums"]["billing_cycle"]
+          created_at: string
+          currency: string
+          id: string
+          order_code: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_proof_url: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          billing_cycle: Database["public"]["Enums"]["billing_cycle"]
+          created_at?: string
+          currency?: string
+          id?: string
+          order_code: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_proof_url?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          billing_cycle?: Database["public"]["Enums"]["billing_cycle"]
+          created_at?: string
+          currency?: string
+          id?: string
+          order_code?: string
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          payment_proof_url?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       plagiarism_checks: {
         Row: {
           check_status: string
@@ -360,6 +414,45 @@ export type Database = {
         }
         Relationships: []
       }
+      subscribers: {
+        Row: {
+          billing_cycle: Database["public"]["Enums"]["billing_cycle"] | null
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          subscription_end: string | null
+          subscription_start: string | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: Database["public"]["Enums"]["billing_cycle"] | null
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          subscription_end?: string | null
+          subscription_start?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: Database["public"]["Enums"]["billing_cycle"] | null
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          subscription_end?: string | null
+          subscription_start?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       summaries: {
         Row: {
           content: string
@@ -399,15 +492,66 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_tracking: {
+        Row: {
+          created_at: string
+          feature_type: string
+          id: string
+          period_end: string
+          period_start: string
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_type: string
+          id?: string
+          period_end: string
+          period_start: string
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_type?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          updated_at?: string
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_feature_limit: {
+        Args: {
+          p_user_id: string
+          p_feature_type: string
+          p_subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Returns: boolean
+      }
+      generate_order_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      increment_feature_usage: {
+        Args: { p_user_id: string; p_feature_type: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      billing_cycle: "monthly" | "yearly"
+      payment_method: "bank_transfer" | "momo" | "zalopay" | "vnpay" | "paypal"
+      payment_status: "pending" | "completed" | "failed" | "cancelled"
+      subscription_tier: "free" | "student" | "premium" | "institutional"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -534,6 +678,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      billing_cycle: ["monthly", "yearly"],
+      payment_method: ["bank_transfer", "momo", "zalopay", "vnpay", "paypal"],
+      payment_status: ["pending", "completed", "failed", "cancelled"],
+      subscription_tier: ["free", "student", "premium", "institutional"],
+    },
   },
 } as const
