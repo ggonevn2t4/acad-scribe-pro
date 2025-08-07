@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, Users, FileText, CheckCircle } from "lucide-react";
 import heroImage from "@/assets/hero-academic-ai.jpg";
 const HeroSection = () => {
-  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 gradient-hero opacity-5"></div>
       
@@ -11,13 +12,13 @@ const HeroSection = () => {
         <FileText className="h-8 w-8 text-accent" />
       </div>
       <div className="absolute top-40 right-20 opacity-20 animate-float" style={{
-      animationDelay: '2s'
-    }}>
+        animationDelay: '2s'
+      }}>
         <Sparkles className="h-6 w-6 text-primary" />
       </div>
       <div className="absolute bottom-32 left-20 opacity-20 animate-float" style={{
-      animationDelay: '4s'
-    }}>
+        animationDelay: '4s'
+      }}>
         <CheckCircle className="h-7 w-7 text-accent" />
       </div>
 
@@ -82,8 +83,8 @@ const HeroSection = () => {
 
           {/* Right image */}
           <div className="relative animate-fade-in-up" style={{
-          animationDelay: '0.3s'
-        }}>
+            animationDelay: '0.3s'
+          }}>
             <div className="relative">
               <img src={heroImage} alt="Students using AI for academic writing" className="w-full h-auto rounded-2xl shadow-elegant hover-lift" />
               
@@ -96,8 +97,8 @@ const HeroSection = () => {
               </div>
               
               <div className="absolute -bottom-4 -right-4 surface-elevated p-4 rounded-xl shadow-soft animate-float" style={{
-              animationDelay: '1s'
-            }}>
+                animationDelay: '1s'
+              }}>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-4 w-4 text-accent" />
                   <span className="text-sm font-medium">Hoàn thành 95%</span>
@@ -107,6 +108,8 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default HeroSection;
