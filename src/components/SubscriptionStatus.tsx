@@ -68,7 +68,7 @@ const PLAN_LIMITS = {
 };
 
 const SubscriptionStatus = () => {
-  const { subscription, usage, loading, refetchSubscription, refetchUsage } = useSubscription();
+  const { subscription, usage, loading, refreshSubscription, refreshUsage } = useSubscription();
   const navigate = useNavigate();
 
   if (loading) {
@@ -97,7 +97,7 @@ const SubscriptionStatus = () => {
     );
   }
 
-  const planLimits = PLAN_LIMITS[subscription.plan_id as keyof typeof PLAN_LIMITS];
+  const planLimits = PLAN_LIMITS[subscription.subscription_tier as keyof typeof PLAN_LIMITS];
   const isUnlimited = (limit: number) => limit === -1;
   const getUsagePercent = (used: number, limit: number) => {
     if (isUnlimited(limit)) return 0;
@@ -117,14 +117,10 @@ const SubscriptionStatus = () => {
   ];
 
   const getStatusBadge = () => {
-    switch (subscription.status) {
-      case 'active':
-        return <Badge variant="secondary" className="bg-green-100 text-green-800">Đang hoạt động</Badge>;
-      case 'expired':
-        return <Badge variant="destructive">Đã hết hạn</Badge>;
-      default:
-        return <Badge variant="outline">Không hoạt động</Badge>;
+    if (subscription.is_active) {
+      return <Badge variant="secondary" className="bg-green-100 text-green-800">Đang hoạt động</Badge>;
     }
+    return <Badge variant="destructive">Không hoạt động</Badge>;
   };
 
   const getPlanBadge = () => {
@@ -143,9 +139,9 @@ const SubscriptionStatus = () => {
     };
 
     return (
-      <Badge className={colors[subscription.plan_id as keyof typeof colors]}>
+      <Badge className={colors[subscription.subscription_tier as keyof typeof colors]}>
         <Crown className="h-3 w-3 mr-1" />
-        {planNames[subscription.plan_id as keyof typeof planNames]}
+        {planNames[subscription.subscription_tier as keyof typeof planNames]}
       </Badge>
     );
   };
@@ -172,34 +168,29 @@ const SubscriptionStatus = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Ngày bắt đầu</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {subscription.subscription_start && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Ngày bắt đầu</span>
+                </div>
+                <p className="font-medium">
+                  {new Date(subscription.subscription_start).toLocaleDateString('vi-VN')}
+                </p>
               </div>
-              <p className="font-medium">
-                {new Date(subscription.start_date).toLocaleDateString('vi-VN')}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Ngày hết hạn</span>
+            )}
+            {subscription.subscription_end && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Ngày hết hạn</span>
+                </div>
+                <p className="font-medium">
+                  {new Date(subscription.subscription_end).toLocaleDateString('vi-VN')}
+                </p>
               </div>
-              <p className="font-medium">
-                {new Date(subscription.end_date).toLocaleDateString('vi-VN')}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Gia hạn tự động</span>
-              </div>
-              <p className="font-medium">
-                {subscription.auto_renew ? 'Bật' : 'Tắt'}
-              </p>
-            </div>
+            )}
           </div>
           
           <div className="flex gap-2 mt-6">
@@ -212,8 +203,8 @@ const SubscriptionStatus = () => {
             <Button 
               variant="outline"
               onClick={() => {
-                refetchSubscription();
-                refetchUsage();
+                refreshSubscription();
+                refreshUsage();
               }}
             >
               <RefreshCw className="h-4 w-4" />

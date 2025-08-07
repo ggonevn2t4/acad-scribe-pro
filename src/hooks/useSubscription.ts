@@ -1,36 +1,27 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+
+export type SubscriptionTier = 'free' | 'student' | 'premium' | 'institutional';
+export type BillingCycle = 'monthly' | 'yearly';
 
 export interface SubscriptionData {
   id: string;
-  plan_id: string;
-  plan_name: string;
-  billing_cycle: 'monthly' | 'yearly';
-  status: 'active' | 'inactive' | 'expired';
-  start_date: string;
-  end_date: string;
-  auto_renew: boolean;
+  subscription_tier: SubscriptionTier;
+  billing_cycle: BillingCycle | null;
+  subscription_start: string | null;
+  subscription_end: string | null;
+  is_active: boolean;
 }
 
 export interface UsageData {
-  outlines: number;
-  writings: number;
-  grammar: number;
-  summaries: number;
-  citations: number;
-  exports: number;
-  aiAssistant: number;
-  templates: number;
-  plagiarism: number;
+  [feature: string]: number;
 }
 
 export const useSubscription = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
-  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [usage, setUsage] = useState<UsageData>({});
   const [loading, setLoading] = useState(true);
 
   const fetchSubscription = async () => {
@@ -41,104 +32,166 @@ export const useSubscription = () => {
     }
 
     try {
-      // TODO: Implement when subscribers table is ready
-      const mockSubscription: SubscriptionData = {
-        id: user.id,
-        plan_id: 'free',
-        plan_name: 'Học Viên',
-        billing_cycle: 'monthly',
-        status: 'active',
-        start_date: new Date().toISOString(),
-        end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        auto_renew: false
-      };
-      
-      setSubscription(mockSubscription);
-    } catch (error: any) {
+      const { data, error } = await supabase
+        .from('subscribers')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setSubscription(data);
+      } else {
+        // Create default free subscription
+        const { data: newSub, error: insertError } = await supabase
+          .from('subscribers')
+          .insert({
+            user_id: user.id,
+            email: user.email || '',
+            subscription_tier: 'free',
+            is_active: true
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+        setSubscription(newSub);
+      }
+    } catch (error) {
       console.error('Error fetching subscription:', error);
-      toast({
-        title: "Lỗi tải thông tin gói",
-        description: error.message,
-        variant: "destructive"
-      });
     } finally {
       setLoading(false);
     }
   };
 
   const fetchUsage = async () => {
-    if (!user) {
-      setUsage(null);
-      return;
-    }
+    if (!user) return;
 
     try {
-      // TODO: Implement when usage_tracking table is ready
-      const mockUsage: UsageData = {
-        outlines: 1,
-        writings: 0,
-        grammar: 2,
-        summaries: 0,
-        citations: 3,
-        exports: 1,
-        aiAssistant: 2,
-        templates: 0,
-        plagiarism: 0
-      };
-      
-      setUsage(mockUsage);
-    } catch (error: any) {
+      const { data, error } = await supabase
+        .from('usage_tracking')
+        .select('feature_type, usage_count')
+        .eq('user_id', user.id)
+        .gte('period_start', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+      if (error) throw error;
+
+      const usageMap: UsageData = {};
+      data?.forEach(item => {
+        usageMap[item.feature_type] = item.usage_count;
+      });
+      setUsage(usageMap);
+    } catch (error) {
       console.error('Error fetching usage:', error);
     }
   };
 
-  const checkFeatureLimit = async (feature: string): Promise<boolean> => {
+  const checkFeatureLimit = async (featureType: string): Promise<boolean> => {
     if (!user || !subscription) return false;
 
     try {
-      // TODO: Implement when database functions are ready
-      console.log('Checking feature limit for:', feature);
-      return true; // For now, allow all features
-    } catch (error: any) {
+      const { data, error } = await supabase.rpc('check_feature_limit', {
+        p_user_id: user.id,
+        p_feature_type: featureType,
+        p_subscription_tier: subscription.subscription_tier
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
       console.error('Error checking feature limit:', error);
       return false;
     }
   };
 
-  const incrementFeatureUsage = async (feature: string): Promise<boolean> => {
-    if (!user) return false;
+  const incrementUsage = async (featureType: string) => {
+    if (!user) return;
 
     try {
-      // TODO: Implement when database functions are ready
-      console.log('Incrementing feature usage for:', feature);
+      await supabase.rpc('increment_feature_usage', {
+        p_user_id: user.id,
+        p_feature_type: featureType
+      });
       
       // Refresh usage data
-      await fetchUsage();
-      
-      return true; // For now, always succeed
-    } catch (error: any) {
-      console.error('Error incrementing feature usage:', error);
-      toast({
-        title: "Lỗi cập nhật sử dụng",
-        description: "Không thể cập nhật thống kê sử dụng",
-        variant: "destructive"
-      });
-      return false;
+      fetchUsage();
+    } catch (error) {
+      console.error('Error incrementing usage:', error);
     }
+  };
+
+  const getFeatureLimit = (featureType: string): number => {
+    if (!subscription) return 0;
+
+    const limits = {
+      free: {
+        outline_generator: 3,
+        writing_projects: 2,
+        grammar_check: 5,
+        document_summarizer: 0,
+        citation_manager: 0,
+        plagiarism_check: 0
+      },
+      student: {
+        outline_generator: 999999,
+        writing_projects: 20,
+        grammar_check: 999999,
+        document_summarizer: 50,
+        citation_manager: 999999,
+        plagiarism_check: 10
+      },
+      premium: {
+        outline_generator: 999999,
+        writing_projects: 999999,
+        grammar_check: 999999,
+        document_summarizer: 999999,
+        citation_manager: 999999,
+        plagiarism_check: 999999
+      },
+      institutional: {
+        outline_generator: 999999,
+        writing_projects: 999999,
+        grammar_check: 999999,
+        document_summarizer: 999999,
+        citation_manager: 999999,
+        plagiarism_check: 999999
+      }
+    };
+
+    return limits[subscription.subscription_tier]?.[featureType as keyof typeof limits.free] || 0;
+  };
+
+  const hasFeatureAccess = (featureType: string): boolean => {
+    return getFeatureLimit(featureType) > 0;
+  };
+
+  const getRemainingUsage = (featureType: string): number => {
+    const limit = getFeatureLimit(featureType);
+    const used = usage[featureType] || 0;
+    return Math.max(0, limit - used);
   };
 
   useEffect(() => {
     fetchSubscription();
-    fetchUsage();
   }, [user]);
+
+  useEffect(() => {
+    if (subscription) {
+      fetchUsage();
+    }
+  }, [subscription]);
 
   return {
     subscription,
     usage,
     loading,
     checkFeatureLimit,
-    incrementFeatureUsage,
-    refetchSubscription: fetchSubscription,
-    refetchUsage: fetchUsage
+    incrementUsage,
+    getFeatureLimit,
+    hasFeatureAccess,
+    getRemainingUsage,
+    refreshSubscription: fetchSubscription,
+    refreshUsage: fetchUsage
   };
 };
