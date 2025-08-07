@@ -14,6 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
+      citations: {
+        Row: {
+          author: string | null
+          citation_style: string
+          created_at: string
+          formatted_citation: string
+          id: string
+          publication_year: number | null
+          raw_citation: string
+          source_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author?: string | null
+          citation_style: string
+          created_at?: string
+          formatted_citation: string
+          id?: string
+          publication_year?: number | null
+          raw_citation: string
+          source_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author?: string | null
+          citation_style?: string
+          created_at?: string
+          formatted_citation?: string
+          id?: string
+          publication_year?: number | null
+          raw_citation?: string
+          source_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          content: string
+          created_at: string
+          document_type: string
+          id: string
+          readability_score: number | null
+          title: string
+          updated_at: string
+          user_id: string
+          word_count: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          document_type: string
+          id?: string
+          readability_score?: number | null
+          title: string
+          updated_at?: string
+          user_id: string
+          word_count?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          document_type?: string
+          id?: string
+          readability_score?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          word_count?: number | null
+        }
+        Relationships: []
+      }
+      outlines: {
+        Row: {
+          academic_level: string
+          content: Json
+          created_at: string
+          id: string
+          title: string
+          topic: string
+          updated_at: string
+          user_id: string
+          word_count: number
+        }
+        Insert: {
+          academic_level: string
+          content: Json
+          created_at?: string
+          id?: string
+          title: string
+          topic: string
+          updated_at?: string
+          user_id: string
+          word_count: number
+        }
+        Update: {
+          academic_level?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          title?: string
+          topic?: string
+          updated_at?: string
+          user_id?: string
+          word_count?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -42,6 +156,45 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      summaries: {
+        Row: {
+          content: string
+          created_at: string
+          file_name: string | null
+          id: string
+          key_insights: Json | null
+          original_title: string
+          summary: string
+          summary_length: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          key_insights?: Json | null
+          original_title: string
+          summary: string
+          summary_length: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          key_insights?: Json | null
+          original_title?: string
+          summary?: string
+          summary_length?: string
           updated_at?: string
           user_id?: string
         }
