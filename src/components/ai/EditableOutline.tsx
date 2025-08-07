@@ -45,6 +45,14 @@ interface EditableOutlineProps {
   onArticleGenerated?: (article: string) => void;
 }
 
+const AVAILABLE_MODELS = [
+  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', description: 'Tốt nhất cho writing' },
+  { id: 'openai/gpt-4o', name: 'GPT-4o', description: 'Mạnh và đa năng' },
+  { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', description: 'Nhanh và tiết kiệm' },
+  { id: 'anthropic/claude-3-haiku', name: 'Claude 3 Haiku', description: 'Nhanh nhất' },
+  { id: 'meta-llama/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', description: 'Open source' },
+];
+
 const EditableOutline = ({ 
   initialOutline, 
   topic, 
@@ -59,6 +67,7 @@ const EditableOutline = ({
   const [showPreview, setShowPreview] = useState(false);
   const [generatedArticle, setGeneratedArticle] = useState<string>("");
   const [articleTone, setArticleTone] = useState<string>("academic");
+  const [selectedModel, setSelectedModel] = useState<string>("anthropic/claude-3.5-sonnet");
   
   const { toast } = useToast();
 
@@ -201,7 +210,8 @@ const EditableOutline = ({
           topic,
           academicLevel,
           wordCount,
-          tone: articleTone
+          tone: articleTone,
+          model: selectedModel
         },
       });
 
@@ -390,7 +400,7 @@ const EditableOutline = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Label>Số từ mục tiêu</Label>
               <Input value={wordCount} disabled />
@@ -398,6 +408,24 @@ const EditableOutline = ({
             <div>
               <Label>Cấp độ học thuật</Label>
               <Input value={academicLevel} disabled />
+            </div>
+            <div>
+              <Label>AI Model</Label>
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {AVAILABLE_MODELS.map((model) => (
+                    <SelectItem key={model.id} value={model.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{model.name}</span>
+                        <span className="text-xs text-muted-foreground">{model.description}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Tone bài viết</Label>

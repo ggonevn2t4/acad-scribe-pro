@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,13 +15,13 @@ serve(async (req) => {
   }
 
   try {
-    const { outline, topic, academicLevel, wordCount, tone = "academic" } = await req.json();
+    const { outline, topic, academicLevel, wordCount, tone = "academic", model = "anthropic/claude-3.5-sonnet" } = await req.json();
 
-    console.log('Generating full article for:', { topic, academicLevel, wordCount });
+    console.log('Generating full article for:', { topic, academicLevel, wordCount, model });
 
-    if (!openAIApiKey) {
+    if (!openRouterApiKey) {
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        JSON.stringify({ error: 'OpenRouter API key not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -70,14 +70,16 @@ HƯỚNG DẪN VIẾT:
 
 Viết bài báo hoàn chỉnh ngay bây giờ:`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://lovable.dev',
+        'X-Title': 'Academic Writing Assistant'
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: model,
         messages: [
           {
             role: 'system',
@@ -95,8 +97,8 @@ Viết bài báo hoàn chỉnh ngay bây giờ:`;
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      console.error('OpenRouter API error:', errorData);
+      throw new Error(`OpenRouter API error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
