@@ -112,10 +112,78 @@ const Payment = () => {
     );
   }
 
-  // Redirect to auth if not logged in
+  // Show login prompt if not authenticated and plan is selected
   if (!user) {
-    window.location.href = '/auth';
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-subtle py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-primary mb-4">
+              Đăng nhập để tiếp tục
+            </h1>
+            <p className="text-xl text-subtle">
+              Vui lòng đăng nhập để thanh toán gói {planData.name}
+            </p>
+          </div>
+
+          {/* Selected Plan Summary */}
+          <Card className="border-2 border-primary mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>{planData.name}</span>
+                <Badge variant="secondary">
+                  {billingCycle === 'monthly' ? 'Hàng tháng' : 'Hàng năm'}
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                <div className="flex items-baseline">
+                  <span className="text-3xl font-bold text-primary">
+                    {formatPrice(getAmount())}
+                  </span>
+                  <span className="text-subtle ml-2">
+                    /{billingCycle === 'monthly' ? 'tháng' : 'năm'}
+                  </span>
+                </div>
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {planData.features.slice(0, 6).map((feature, index) => (
+                  <li key={index} className="flex items-start space-x-3">
+                    <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <div className="text-center space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                onClick={() => window.location.href = '/auth?redirect=' + encodeURIComponent(window.location.pathname + window.location.search)}
+                size="lg"
+                className="gradient-primary"
+              >
+                Đăng nhập để thanh toán
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = '/payment'}
+                size="lg"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Chọn gói khác
+              </Button>
+            </div>
+            <p className="text-sm text-subtle">
+              Chưa có tài khoản? Đăng ký miễn phí khi đăng nhập
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

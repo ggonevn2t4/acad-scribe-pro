@@ -114,14 +114,9 @@ export const PricingPlans = () => {
   };
 
   const handleSelectPlan = (planId: string) => {
-    if (!user) {
-      window.location.href = '/auth';
-      return;
-    }
-    
     if (planId === 'free') return;
     
-    // Navigate to payment page with plan details
+    // Always navigate to payment page with plan details, regardless of auth status
     const params = new URLSearchParams({
       plan: planId,
       cycle: billingCycle
