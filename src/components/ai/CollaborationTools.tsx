@@ -9,10 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Users, Plus, MessageCircle, History, Share2, UserPlus, Clock, Eye, Edit, Crown } from "lucide-react";
+import { Users, Plus, MessageCircle, History, Share2, UserPlus, Clock, Eye, Edit, Crown, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ExportManager from "./ExportManager";
 
 interface Project {
   id: string;
@@ -290,10 +291,11 @@ const CollaborationTools = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="projects" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="collaboration">Cộng tác</TabsTrigger>
           <TabsTrigger value="versions">Phiên bản</TabsTrigger>
+          <TabsTrigger value="export">Xuất file</TabsTrigger>
         </TabsList>
 
         <TabsContent value="projects" className="space-y-4">
@@ -528,6 +530,10 @@ const CollaborationTools = () => {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="export" className="space-y-4">
+          <ExportManager selectedProject={selectedProject} />
         </TabsContent>
       </Tabs>
     </div>
