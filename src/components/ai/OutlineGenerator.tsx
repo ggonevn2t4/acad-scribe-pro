@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, ChevronRight, Download, Loader2, Edit, FileText } from "lucide-react";
+import { ChevronDown, ChevronRight, Download, Loader2, Edit, FileText, RotateCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +41,87 @@ const OutlineGenerator = () => {
   
   const { user } = useAuth();
   const { toast } = useToast();
+
+  // Keys for localStorage
+  const STORAGE_KEYS = {
+    OUTLINE: 'outline_generator_outline',
+    FORM_DATA: 'outline_generator_form',
+    ARTICLE: 'outline_generator_article',
+    ACTIVE_TAB: 'outline_generator_tab'
+  };
+
+  // Load persisted data on component mount
+  useEffect(() => {
+    try {
+      const savedOutline = localStorage.getItem(STORAGE_KEYS.OUTLINE);
+      const savedFormData = localStorage.getItem(STORAGE_KEYS.FORM_DATA);
+      const savedArticle = localStorage.getItem(STORAGE_KEYS.ARTICLE);
+      const savedTab = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
+
+      if (savedOutline) {
+        setOutline(JSON.parse(savedOutline));
+        setExpandedSections(new Set([0]));
+      }
+
+      if (savedFormData) {
+        const formData = JSON.parse(savedFormData);
+        setTopic(formData.topic || "");
+        setAcademicLevel(formData.academicLevel || "");
+        setWordCount(formData.wordCount || "");
+      }
+
+      if (savedArticle) {
+        setGeneratedArticle(savedArticle);
+      }
+
+      if (savedTab && savedOutline) {
+        setActiveTab(savedTab);
+      }
+    } catch (error) {
+      console.error('Error loading persisted data:', error);
+    }
+  }, []);
+
+  // Save data to localStorage whenever state changes
+  useEffect(() => {
+    if (outline) {
+      localStorage.setItem(STORAGE_KEYS.OUTLINE, JSON.stringify(outline));
+    }
+  }, [outline]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.FORM_DATA, JSON.stringify({
+      topic,
+      academicLevel,
+      wordCount
+    }));
+  }, [topic, academicLevel, wordCount]);
+
+  useEffect(() => {
+    if (generatedArticle) {
+      localStorage.setItem(STORAGE_KEYS.ARTICLE, generatedArticle);
+    }
+  }, [generatedArticle]);
+
+  useEffect(() => {
+    if (outline) {
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, activeTab);
+    }
+  }, [activeTab, outline]);
+
+  // Clear all persisted data
+  const clearPersistedData = () => {
+    Object.values(STORAGE_KEYS).forEach(key => {
+      localStorage.removeItem(key);
+    });
+    setOutline(null);
+    setGeneratedArticle("");
+    setActiveTab("view");
+    toast({
+      title: "Đã xóa dữ liệu",
+      description: "Tất cả outline và bài viết đã được xóa",
+    });
+  };
 
   const generateOutline = async () => {
     if (!topic || !academicLevel || !wordCount) {
@@ -212,10 +293,16 @@ const OutlineGenerator = () => {
                 Bài viết {generatedArticle && "✓"}
               </TabsTrigger>
             </TabsList>
-            <Button onClick={exportOutline} variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Export Outline
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={exportOutline} variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Export Outline
+              </Button>
+              <Button onClick={clearPersistedData} variant="outline" size="sm">
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Xóa tất cả
+              </Button>
+            </div>
           </div>
 
           <TabsContent value="view" className="space-y-4">
