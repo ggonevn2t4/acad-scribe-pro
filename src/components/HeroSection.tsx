@@ -34,7 +34,7 @@ const HeroSection = () => {
             
             <h1 className="text-4xl lg:text-6xl font-bold leading-tight text-primary mb-6">
               Trí tuệ nhân tạo
-              <span className="block gradient-primary bg-clip-text text-[foreforeground] text-inherit">
+              <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-pulse hover:animate-none transition-all duration-500 text-shadow-glow">
                 hỗ trợ viết học thuật
               </span>
               <span className="block text-foreground">
