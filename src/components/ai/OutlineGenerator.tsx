@@ -8,11 +8,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, ChevronRight, Download, Loader2, Edit, FileText, RotateCcw } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { 
+  ChevronDown, 
+  ChevronRight, 
+  Loader2, 
+  FileText, 
+  RotateCcw,
+  Sparkles,
+  BookOpen,
+  Target,
+  Clock,
+  CheckCircle2,
+  Info,
+  Download
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import EditableOutline from "./EditableOutline";
+import ExportOptions from "./ExportOptions";
 
 interface OutlineSection {
   title: string;
@@ -226,81 +242,184 @@ const OutlineGenerator = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Input Form */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="topic">Chủ đề</Label>
-          <Textarea
-            id="topic"
-            placeholder="Nhập chủ đề bài viết..."
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            rows={3}
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="academic-level">Cấp độ học thuật</Label>
-          <Select value={academicLevel} onValueChange={setAcademicLevel}>
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn cấp độ" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="high-school">Trung học phổ thông</SelectItem>
-              <SelectItem value="undergraduate">Đại học</SelectItem>
-              <SelectItem value="graduate">Thạc sĩ</SelectItem>
-              <SelectItem value="doctoral">Tiến sĩ</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="word-count">Số từ mục tiêu</Label>
-          <Input
-            id="word-count"
-            type="number"
-            placeholder="1500"
-            value={wordCount}
-            onChange={(e) => setWordCount(e.target.value)}
-          />
-        </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold text-primary flex items-center justify-center gap-3">
+          <Sparkles className="h-8 w-8" />
+          AI Outline Generator
+        </h1>
+        <p className="text-muted-foreground">
+          Tạo outline học thuật chuyên nghiệp với sức mạnh của AI
+        </p>
       </div>
 
-      <Button 
-        onClick={generateOutline}
-        disabled={isGenerating}
-        className="w-full gradient-primary"
-      >
-        {isGenerating ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Đang tạo outline...
-          </>
-        ) : (
-          'Tạo Outline'
-        )}
-      </Button>
+      {/* Input Form */}
+      <Card className="border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
+        <CardHeader className="text-center">
+          <CardTitle className="flex items-center justify-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            Thông tin bài viết
+          </CardTitle>
+          <CardDescription>
+            Cung cấp thông tin để AI tạo outline phù hợp nhất
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-primary" />
+                <Label htmlFor="topic" className="font-medium">Chủ đề</Label>
+              </div>
+              <Textarea
+                id="topic"
+                placeholder="Ví dụ: Tác động của trí tuệ nhân tạo đến giáo dục..."
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                rows={4}
+                className="resize-none"
+              />
+              <p className="text-xs text-muted-foreground">
+                Mô tả chi tiết chủ đề bạn muốn viết
+              </p>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-primary" />
+                <Label htmlFor="academic-level" className="font-medium">Cấp độ học thuật</Label>
+              </div>
+              <Select value={academicLevel} onValueChange={setAcademicLevel}>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Chọn cấp độ phù hợp" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high-school">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">Trung học phổ thông</span>
+                      <span className="text-xs text-muted-foreground">Cấp độ cơ bản</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="undergraduate">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">Đại học</span>
+                      <span className="text-xs text-muted-foreground">Cấp độ trung bình</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="graduate">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">Thạc sĩ</span>
+                      <span className="text-xs text-muted-foreground">Cấp độ nâng cao</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="doctoral">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">Tiến sĩ</span>
+                      <span className="text-xs text-muted-foreground">Cấp độ chuyên sâu</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Độ phức tạp của ngôn ngữ và nội dung
+              </p>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                <Label htmlFor="word-count" className="font-medium">Số từ mục tiêu</Label>
+              </div>
+              <Input
+                id="word-count"
+                type="number"
+                placeholder="1500"
+                value={wordCount}
+                onChange={(e) => setWordCount(e.target.value)}
+                className="h-12 text-center text-lg font-medium"
+                min="100"
+                max="10000"
+                step="100"
+              />
+              <p className="text-xs text-muted-foreground">
+                Độ dài dự kiến của bài viết cuối cùng
+              </p>
+            </div>
+          </div>
+
+          {/* Progress indicator */}
+          {isGenerating && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Đang tạo outline...</span>
+              </div>
+              <Progress value={75} className="h-2" />
+              <p className="text-xs text-muted-foreground text-center">
+                AI đang phân tích chủ đề và tạo cấu trúc outline
+              </p>
+            </div>
+          )}
+
+          {/* Generate Button */}
+          <Button 
+            onClick={generateOutline}
+            disabled={isGenerating || !topic || !academicLevel || !wordCount}
+            className="w-full h-12 text-lg font-medium gradient-primary"
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                Đang tạo outline...
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-3 h-5 w-5" />
+                Tạo Outline với AI
+              </>
+            )}
+          </Button>
+
+          {/* Tips */}
+          {!outline && (
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Mẹo:</strong> Mô tả chủ đề càng chi tiết, outline được tạo sẽ càng chính xác và phù hợp.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Generated Outline with Tabs */}
       {outline && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
-              <TabsTrigger value="view">Xem outline</TabsTrigger>
-              <TabsTrigger value="edit">Chỉnh sửa</TabsTrigger>
-              <TabsTrigger value="article" disabled={!generatedArticle}>
+            <TabsList className="grid w-full max-w-lg grid-cols-4">
+              <TabsTrigger value="view" className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4" />
+                Xem
+              </TabsTrigger>
+              <TabsTrigger value="edit" className="flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                Chỉnh sửa
+              </TabsTrigger>
+              <TabsTrigger value="export" className="flex items-center gap-1">
+                <Download className="h-4 w-4" />
+                Export
+              </TabsTrigger>
+              <TabsTrigger value="article" disabled={!generatedArticle} className="flex items-center gap-1">
+                <BookOpen className="h-4 w-4" />
                 Bài viết {generatedArticle && "✓"}
               </TabsTrigger>
             </TabsList>
             <div className="flex gap-2">
-              <Button onClick={exportOutline} variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Export Outline
-              </Button>
               <Button onClick={clearPersistedData} variant="outline" size="sm">
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Xóa tất cả
+                Reset
               </Button>
             </div>
           </div>
@@ -385,6 +504,10 @@ const OutlineGenerator = () => {
                 </Card>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="export">
+            <ExportOptions outline={outline} />
           </TabsContent>
 
           <TabsContent value="edit">
